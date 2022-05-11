@@ -5,7 +5,9 @@ from time import sleep
 
 
 def launch_and_publicly_expose_mlflow_server(mlflow_tracking_uri, ngrok_auth_token, nb=True):
-    command = f"mlflow ui --port 5000 --backend-store-uri {mlflow_tracking_uri} &" # run tracking UI in the background
+    
+    
+    command = f'''mlflow server --port 5000 --backend-store-uri {mlflow_tracking_uri} --gunicorn-opts "--worker-class gevent --threads 3 --workers 3 --timeout 300 --keep-alive 300 --log-level INFO" &''' # run tracking UI in the background
     # run tracking UI in the background
     if nb:
         get_ipython().system_raw(command)
@@ -49,7 +51,7 @@ dir_exp_mlflow.mkdir(exist_ok=True, parents=True)
 
 import mlflow
 mlflow_tracking_uri = (dir_exp_mlflow / 'mlruns').as_uri()
-print(f'mlflow URI: {mlflow_tracking_uri}')
+print(f'mlflow URI: {mlflow_tracking_uri}') # file:///root/work/research/experiments/record_linkage/mlflow/mlruns
 
 launch_and_publicly_expose_mlflow_server(
     mlflow_tracking_uri=mlflow_tracking_uri,
